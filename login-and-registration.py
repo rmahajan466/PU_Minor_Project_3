@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import sqlite3
+import subprocess
 
 # Constants
 DB_FILE = "users.db"
@@ -63,6 +64,8 @@ def login():
     
     if verify_user(username, password):
         messagebox.showinfo("Login", "Login successful!")
+        root.destroy()  # Close the login window
+        subprocess.run(["python", "main.py"])  # Run the main.py script
     else:
         messagebox.showerror("Login", "Invalid username or password")
 
