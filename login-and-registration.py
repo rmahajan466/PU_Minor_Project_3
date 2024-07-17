@@ -1,22 +1,50 @@
 import tkinter as tk
 from tkinter import messagebox
-import json
-import os
+import sqlite3
 
 # Constants
-USER_DATA_FILE = "users.json"
+DB_FILE = "users.db"
 
-# Function to load user data
-def load_user_data():
-    if os.path.exists(USER_DATA_FILE):
-        with open(USER_DATA_FILE, 'r') as file:
-            return json.load(file)
-    return {}
+# Function to initialize the database
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            password TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
-# Function to save user data
-def save_user_data(data):
-    with open(USER_DATA_FILE, 'w') as file:
-        json.dump(data, file)
+# Function to add a new user to the database
+def add_user(username, password):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+    conn.commit()
+    conn.close()
+
+# Function to verify user credentials
+def verify_user(username, password):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('SELECT password FROM users WHERE username = ?', (username,))
+    result = cursor.fetchone()
+    conn.close()
+    if result is None:
+        return False
+    return result[0] == password
+
+# Function to check if a user already exists
+def user_exists(username):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('SELECT 1 FROM users WHERE username = ?', (username,))
+    result = cursor.fetchone()
+    conn.close()
+    return result is not None
 
 # Function to switch to login page
 def show_login():
@@ -32,9 +60,8 @@ def show_registration():
 def login():
     username = login_username_entry.get()
     password = login_password_entry.get()
-    users = load_user_data()
     
-    if username in users and users[username] == password:
+    if verify_user(username, password):
         messagebox.showinfo("Login", "Login successful!")
     else:
         messagebox.showerror("Login", "Invalid username or password")
@@ -44,17 +71,18 @@ def register():
     username = reg_username_entry.get()
     password = reg_password_entry.get()
     confirm_password = reg_confirm_password_entry.get()
-    users = load_user_data()
     
-    if username in users:
+    if user_exists(username):
         messagebox.showerror("Registration", "Username already exists")
     elif password != confirm_password:
         messagebox.showerror("Registration", "Passwords do not match")
     else:
-        users[username] = password
-        save_user_data(users)
+        add_user(username, password)
         messagebox.showinfo("Registration", "Registration successful!")
         show_login()
+
+# Initialize database
+init_db()
 
 # Main window
 root = tk.Tk()
