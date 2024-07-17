@@ -1,1 +1,5 @@
 pygame
+random
+tkinter
+json
+os
