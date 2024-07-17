@@ -1,5 +1,8 @@
 pygame
+<<<<<<< HEAD
 random
 tkinter
 json
 os
+=======
+>>>>>>> 1ded89a76219819dc088874a217b255fe2a95a13
