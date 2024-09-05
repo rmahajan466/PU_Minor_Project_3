@@ -290,7 +290,6 @@ def main():
             level_time = 0
             if fall_speed > 0.15:
                 fall_speed -= 0.005
-            
 
         # PIECE FALLING CODE
         if fall_time/1000 >= fall_speed:
