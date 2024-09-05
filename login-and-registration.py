@@ -123,3 +123,4 @@ tk.Button(registration_frame, text="Back to Login", command=show_login).pack(pad
 login_frame.pack()
 
 root.mainloop()
+ 
