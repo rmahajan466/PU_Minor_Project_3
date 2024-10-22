@@ -299,6 +299,7 @@ def main():
                 current_piece.y -= 1
                 change_piece = True
 
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
